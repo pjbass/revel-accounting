@@ -1,0 +1,49 @@
+{{set . "title" "Home"}}
+{{template "header.html" .}}
+
+<header class="jumbotron">
+  <div class="container">
+    <div class="row">
+      <h1>Accounting</h1>
+      <p></p>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="row">
+    <div class="span6 mx-auto">
+      {{template "flash.html" .}}
+      <table class="table table-hover">
+        <thead class="thead-light">
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Balance</th>
+          </tr>
+        </thead>
+        <tbody>
+        {{ range .assets }}
+          <tr>
+            <th scope="row">{{ .Name }}</th>
+            <td>{{ .Type }}</td>
+            <td>${{ .Balance }}</td>
+          </tr>
+        {{ end }}
+        </tbody>
+      </table>
+      
+      <form action="/App/Add" method="POST" class="input-group">
+        <input type="text" name="name" />
+        <select name="aorl">
+          <option value="Asset">Asset</option>
+          <option value="Liability">Liability</option>
+        </select>
+        <input type="number" name="balance" step=0.01 />
+        <button type="submit" class="btn btn-primary">Add</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+{{template "footer.html" .}}
