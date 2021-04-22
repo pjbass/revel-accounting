@@ -8,5 +8,5 @@ type Asset struct {
   gorm.Model 
   Name string `gorm:"size:64"`
   Type string `gorm:"size:16"`
-  Balance float32
+  Balance float64
 }
