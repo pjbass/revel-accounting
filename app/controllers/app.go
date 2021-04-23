@@ -5,6 +5,7 @@ import (
   gormc "github.com/revel/modules/orm/gorm/app/controllers"
   gorm "github.com/revel/modules/orm/gorm/app"
   "accounting/app/models"
+  "regexp"
 )
 
 /**
@@ -74,7 +75,7 @@ func (c App) Add(name string, aorl string, balance float64) revel.Result {
   
   c.Validation.Required(name).Message("A name for the asset/liability is required!")
   c.Validation.Required(aorl).Message("The type ('Asset' or 'Liability') is required!")
-  c.Validation.Required(aorl == "Asset" || aorl == "Liability").Message("The type must be either an 'Asset' or a 'Liability'")
+  c.Validation.Match(aorl, regexp.MustCompile("Asset|Liability")).Message("The type must be either an 'Asset' or a 'Liability'")
   c.Validation.Required(balance).Message("The balance for the asset/liability is required!")
   
   if c.Validation.HasErrors() {
