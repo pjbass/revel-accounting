@@ -7,10 +7,19 @@ import (
   "accounting/app/models"
 )
 
+/**
+ * App struct that acts as the main controller for the application.
+ * Handles adding, deleting, and displaying assets and liabilities.
+ */
 type App struct {
   gormc.TxnController
 }
 
+/**
+ * Function used to calculate total assets, total liabilities, and net worth.
+ * Takes an array of Asset models and returns the total assets, total 
+ * liabilities, and net worth, in that order.
+ */
 func calculateTotals(assets []models.Asset) (float64, float64, float64) {
   
   var (
@@ -31,6 +40,10 @@ func calculateTotals(assets []models.Asset) (float64, float64, float64) {
   return assetTotal, liabilityTotal, netWorth
 }
 
+/**
+ * The main page of the application. Displays assets and liabilities, as well
+ * as total assets, total liabilities, and net worth.
+ */
 func (c App) Index() revel.Result {
   
   var assets = []models.Asset{}
@@ -41,16 +54,27 @@ func (c App) Index() revel.Result {
 	return c.Render(assets, assetTotal, liabilityTotal, netWorth)
 }
 
+/**
+ * Endpoint that allows deleting an asset by id. Redirects to the index
+ * upon completion.
+ */
 func (c App) Delete(id uint) revel.Result {
+  
   gorm.DB.Delete(&models.Asset{}, id)
   
   return c.Redirect(App.Index)
 }
 
+/**
+ * Endpoint that allows adding an asset or liability. Validates input before
+ * adding, and will flash a warning when validation fails. Redirects to the
+ * index page.
+ */
 func (c App) Add(name string, aorl string, balance float64) revel.Result {
   
   c.Validation.Required(name).Message("A name for the asset/liability is required!")
   c.Validation.Required(aorl).Message("The type ('Asset' or 'Liability') is required!")
+  c.Validation.Required(aorl == "Asset" || aorl == "Liability").Message("The type must be either an 'Asset' or a 'Liability'")
   c.Validation.Required(balance).Message("The balance for the asset/liability is required!")
   
   if c.Validation.HasErrors() {
