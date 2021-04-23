@@ -24,9 +24,9 @@
         </thead>
         <tbody>
           <tr>
-            <td>{{ .assetTotal }}</td>
-            <td>{{ .liabilityTotal }}</td>
-            <td>{{ .netWorth }}</td>
+            <td>${{ printf "%.2f" .assetTotal }}</td>
+            <td>${{ printf "%.2f" .liabilityTotal }}</td>
+            <td>${{ printf "%.2f" .netWorth }}</td>
           </tr>
         </tbody>
       </table>
@@ -44,7 +44,7 @@
           <tr>
             <th scope="row">{{ .Name }}</th>
             <td>{{ .Type }}</td>
-            <td>${{ .Balance }}</td>
+            <td>${{ printf "%.2f" .Balance }}</td>
             <td>
               <form action="/App/Delete" method="POST" class="input-group">
                 <input type="hidden" value="{{ .ID }}" name="id" />
