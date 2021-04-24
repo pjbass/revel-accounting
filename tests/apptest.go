@@ -88,6 +88,20 @@ func (t *AppTest) TestNoBalance() {
   t.AssertContains("The balance for the asset/liability is required!")
 }
 
+func (t *AppTest) TestAlphabetBalance() {
+  assetName := fmt.Sprintf("Test Balance %d", rand.Int())
+  data := url.Values{}
+  
+  data.Add("name", assetName)
+  data.Add("aorl", "Asset")
+  data.Add("balance", "jibberish")
+  
+  t.PostForm("/App/Add", data)
+  t.AssertOk()
+  t.Get("/")
+  t.AssertNotContains(assetName)
+}
+
 func (t *AppTest) TestBadType() {
   
   assetName := fmt.Sprintf("Test Asset %d", rand.Int())
@@ -180,7 +194,22 @@ func (t *AppTest) TestDeleteNonExisting() {
   
   t.PostForm("/App/Delete", data)
   t.AssertOk()
-  
+  t.AssertContains("Asset not found!")
+}
+
+func (t *AppTest) TestDeleteAlphabet() {
+  data := url.Values{}
+  data.Add("id", "jibberish")
+  t.PostForm("/App/Delete", data)
+  t.AssertOk()
+  t.AssertContains("Asset not found!")
+}
+
+func (t *AppTest) TestDeleteNoId() {
+  data := url.Values{}
+  t.PostForm("/App/Delete", data)
+  t.AssertOk()
+  t.AssertContains("Asset not found!")
 }
 
 func (t *AppTest) After() {

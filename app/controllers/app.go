@@ -61,7 +61,20 @@ func (c App) Index() revel.Result {
  */
 func (c App) Delete(id uint) revel.Result {
   
-  gorm.DB.Delete(&models.Asset{}, id)
+  var assets = []models.Asset{}
+  
+  res := gorm.DB.Find(&assets, id)
+  
+  found := int(res.RowsAffected)
+  
+  c.Validation.Min(found, 1).Message("Asset not found!")
+  
+  if c.Validation.HasErrors() {
+    c.Validation.Keep()
+    c.FlashParams()
+  } else {
+    gorm.DB.Delete(&models.Asset{}, id)
+  }
   
   return c.Redirect(App.Index)
 }
