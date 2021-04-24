@@ -2,7 +2,11 @@ package tests
 
 import (
 	"github.com/revel/revel/testing"
+  "accounting/app/models"
+  "accounting/app/controllers"
   "net/url"
+  "regexp"
+  "strings"
   "math/rand"
   "fmt"
 )
@@ -28,7 +32,7 @@ func (t *AppTest) TestAssetCreation() {
   
   data.Add("name", assetName)
   data.Add("aorl", "Asset")
-  data.Add("balance", fmt.Sprintf("%f", rand.Float64()))
+  data.Add("balance", fmt.Sprintf("%f", 100.0 * rand.Float64()))
   
   t.PostForm("/App/Add", data)
   t.AssertOk()
@@ -42,7 +46,7 @@ func (t *AppTest) TestLiabilityCreation() {
   
   data.Add("name", assetName)
   data.Add("aorl", "Liability")
-  data.Add("balance", fmt.Sprintf("%f", rand.Float64()))
+  data.Add("balance", fmt.Sprintf("%f", 100.0 * rand.Float64()))
   
   t.PostForm("/App/Add", data)
   t.AssertOk()
@@ -65,11 +69,11 @@ func (t *AppTest) TestNoType() {
   data := url.Values{}
   
   data.Add("name", assetName)
-  data.Add("balance", fmt.Sprintf("%f", rand.Float64()))
+  data.Add("balance", fmt.Sprintf("%f", 100.0 * rand.Float64()))
   
   t.PostForm("/App/Add", data)
   t.AssertOk()
-  t.AssertContains("The type ('Asset' or 'Liability') is required!")
+  t.AssertContains("The type (Asset or Liability) is required!")
 }
 
 func (t *AppTest) TestNoBalance() {
@@ -91,11 +95,92 @@ func (t *AppTest) TestBadType() {
   
   data.Add("name", assetName)
   data.Add("aorl", "bility")
-  data.Add("balance", fmt.Sprintf("%f", rand.Float64()))
+  data.Add("balance", fmt.Sprintf("%f", 100.0 * rand.Float64()))
   
   t.PostForm("/App/Add", data)
   t.AssertOk()
-  t.AssertContains("The type must be either an 'Asset' or a 'Liability'")
+  t.AssertContains("The type must be either an Asset or a Liability")
+}
+
+func (t *AppTest) TestTotals() {
+  
+  var assets = []models.Asset {
+    models.Asset{
+      Name: "test 1", 
+      Type: "Asset", 
+      Balance: 450.0,
+    },
+    models.Asset{
+      Name: "test 2", 
+      Type: "Liability", 
+      Balance: 200.0,
+    },
+    models.Asset{
+      Name: "test 3",
+      Type: "Asset",
+      Balance: 100.0,
+    },
+    models.Asset{
+      Name: "test 4",
+      Type: "Liability",
+      Balance: 300.0,
+    },
+    models.Asset{
+      Name: "test 5",
+      Type: "Asset",
+      Balance: 150.0,
+    },
+  }
+  
+  assetTotal, liabilityTotal, netWorth := controllers.CalculateTotals(assets)
+  
+  t.Assert(int(assetTotal) == 700) 
+  t.Assert(int(liabilityTotal) == 500)
+  t.Assert(int(netWorth) == 200)
+}
+
+func (t *AppTest) TestDelete() {
+  
+  assetName := fmt.Sprintf("Test Delete %d", rand.Int())
+  data := url.Values{}
+  
+  data.Add("name", assetName)
+  data.Add("aorl", "Liability")
+  data.Add("balance", fmt.Sprintf("%f", 100.0 * rand.Float64()))
+  
+  t.PostForm("/App/Add", data)
+  t.AssertOk()
+  t.AssertContains(assetName)
+  
+  delPat := regexp.MustCompile(
+      `<th scope="row">` + assetName + `</th>[\s\S]*?<input .*?value="(\d+)"`)
+  
+  deleteId := delPat.FindStringSubmatch(string(t.ResponseBody))[1]
+  
+  del := url.Values{}
+  del.Add("id", deleteId)
+  t.PostForm("/App/Delete", del)
+  t.AssertOk()
+  t.AssertNotContains(assetName)
+  
+}
+
+func (t *AppTest) TestDeleteNonExisting() {
+  
+  t.Get("/")
+  body := string(t.ResponseBody)
+  deleteId := string(rand.Int())
+  
+  for strings.Contains(body, deleteId) {
+    deleteId = string(rand.Int())
+  }
+  
+  data := url.Values{}
+  data.Add("id", deleteId)
+  
+  t.PostForm("/App/Delete", data)
+  t.AssertOk()
+  
 }
 
 func (t *AppTest) After() {
