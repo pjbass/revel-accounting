@@ -34,7 +34,7 @@ func (t *AppTest) TestAssetCreation() {
   data.Add("aorl", "Asset")
   data.Add("balance", fmt.Sprintf("%f", 100.0 * rand.Float64()))
   
-  t.PostForm("/App/Add", data)
+  t.PostForm("/assets/add", data)
   t.AssertOk()
   t.AssertContains(assetName)
 }
@@ -48,7 +48,7 @@ func (t *AppTest) TestLiabilityCreation() {
   data.Add("aorl", "Liability")
   data.Add("balance", fmt.Sprintf("%f", 100.0 * rand.Float64()))
   
-  t.PostForm("/App/Add", data)
+  t.PostForm("/assets/add", data)
   t.AssertOk()
   t.AssertContains(assetName)
 }
@@ -59,7 +59,7 @@ func (t *AppTest) TestNoName() {
   data.Add("aorl", "Asset")
   data.Add("balance", fmt.Sprintf("%f", rand.Float64()))
   
-  t.PostForm("/App/Add", data)
+  t.PostForm("/assets/add", data)
   t.AssertOk()
   t.AssertContains("A name for the asset/liability is required!")
 }
@@ -71,7 +71,7 @@ func (t *AppTest) TestNoType() {
   data.Add("name", assetName)
   data.Add("balance", fmt.Sprintf("%f", 100.0 * rand.Float64()))
   
-  t.PostForm("/App/Add", data)
+  t.PostForm("/assets/add", data)
   t.AssertOk()
   t.AssertContains("The type (Asset or Liability) is required!")
 }
@@ -83,7 +83,7 @@ func (t *AppTest) TestNoBalance() {
   data.Add("name", assetName)
   data.Add("aorl", "Asset")
   
-  t.PostForm("/App/Add", data)
+  t.PostForm("/assets/add", data)
   t.AssertOk()
   t.AssertContains("The balance for the asset/liability is required!")
 }
@@ -96,7 +96,7 @@ func (t *AppTest) TestAlphabetBalance() {
   data.Add("aorl", "Asset")
   data.Add("balance", "jibberish")
   
-  t.PostForm("/App/Add", data)
+  t.PostForm("/assets/add", data)
   t.AssertOk()
   t.Get("/")
   t.AssertNotContains(assetName)
@@ -111,7 +111,7 @@ func (t *AppTest) TestBadType() {
   data.Add("aorl", "bility")
   data.Add("balance", fmt.Sprintf("%f", 100.0 * rand.Float64()))
   
-  t.PostForm("/App/Add", data)
+  t.PostForm("/assets/add", data)
   t.AssertOk()
   t.AssertContains("The type must be either an Asset or a Liability")
 }
@@ -162,7 +162,7 @@ func (t *AppTest) TestDelete() {
   data.Add("aorl", "Liability")
   data.Add("balance", fmt.Sprintf("%f", 100.0 * rand.Float64()))
   
-  t.PostForm("/App/Add", data)
+  t.PostForm("/assets/add", data)
   t.AssertOk()
   t.AssertContains(assetName)
   
@@ -173,7 +173,7 @@ func (t *AppTest) TestDelete() {
   
   del := url.Values{}
   del.Add("id", deleteId)
-  t.PostForm("/App/Delete", del)
+  t.PostForm("/assets/delete", del)
   t.AssertOk()
   t.AssertNotContains(assetName)
   
@@ -192,7 +192,7 @@ func (t *AppTest) TestDeleteNonExisting() {
   data := url.Values{}
   data.Add("id", deleteId)
   
-  t.PostForm("/App/Delete", data)
+  t.PostForm("/assets/delete", data)
   t.AssertOk()
   t.AssertContains("Asset not found!")
 }
@@ -200,14 +200,14 @@ func (t *AppTest) TestDeleteNonExisting() {
 func (t *AppTest) TestDeleteAlphabet() {
   data := url.Values{}
   data.Add("id", "jibberish")
-  t.PostForm("/App/Delete", data)
+  t.PostForm("/assets/delete", data)
   t.AssertOk()
   t.AssertContains("Asset not found!")
 }
 
 func (t *AppTest) TestDeleteNoId() {
   data := url.Values{}
-  t.PostForm("/App/Delete", data)
+  t.PostForm("/assets/delete", data)
   t.AssertOk()
   t.AssertContains("Asset not found!")
 }

@@ -8,8 +8,8 @@ module:testrunner
 
 
 GET     /                                       App.Index
-POST    /App/Add                                App.Add
-POST    /App/Delete                             App.Delete
+POST    /assets/add                                App.Add
+POST    /assets/delete                             App.Delete
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

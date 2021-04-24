@@ -46,7 +46,7 @@
             <td>{{ .Type }}</td>
             <td>${{ printf "%.2f" .Balance }}</td>
             <td>
-              <form action="/App/Delete" method="POST" class="input-group">
+              <form action="/assets/delete" method="POST" class="input-group">
                 <input type="hidden" value="{{ .ID }}" name="id" />
                 <button type="submit" class="btn btn-warning">Delete</button>
               </form>
@@ -56,7 +56,7 @@
         </tbody>
       </table>
       
-      <form action="/App/Add" method="POST" class="input-group">
+      <form action="/assets/add" method="POST" class="input-group">
         <input type="text" name="name" />
         <select name="aorl">
           <option value="Asset">Asset</option>
