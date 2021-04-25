@@ -8,4 +8,4 @@ if [ -n "$DB_PASSWORD_FILE" ]; then
   export DB_PASSWORD=$(cat $DB_PASSWORD_FILE)
 fi
 
-revel run /accounting prod
+/accounting/run.sh

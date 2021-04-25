@@ -1,4 +1,12 @@
-FROM golang:1.16
+FROM golang:1.16 as builder
+
+RUN go get github.com/revel/cmd/revel && \
+  go get github.com/lib/pq
+COPY ./ /accounting
+
+RUN revel package -a /accounting -m prod
+
+FROM debian
 
 ENV DB_DRIVER=sqlite3
 ENV DB_HOST=/tmp/testdb.db
@@ -7,10 +15,9 @@ ENV DB_USERNAME=
 ENV DB_PASSWORD=
 ENV PORT=80
 
-RUN go get github.com/revel/cmd/revel && \
-  go get github.com/lib/pq
-COPY ./ /accounting
+COPY --from=builder /accounting/accounting.tar.gz /accounting/accounting.tar.gz
+COPY ./entrypoint.sh /accounting/entrypoint.sh
 
-RUN revel build -a /accounting
+RUN tar -xzf /accounting/accounting.tar.gz -C /accounting
 
 CMD /accounting/entrypoint.sh

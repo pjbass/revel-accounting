@@ -26,3 +26,10 @@ services:
     - "80:80"
     secrets:
     - db_password
+secrets:
+  db_password:
+    external: true
+volumes:
+  data:
+networks:
+  net:
