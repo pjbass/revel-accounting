@@ -10,6 +10,8 @@ RUN go get github.com/revel/cmd/revel && \
   go get github.com/lib/pq
 COPY ./ /accounting
 
+RUN revel build -a /accounting
+
 EXPOSE 80
 
 CMD revel run /accounting prod
