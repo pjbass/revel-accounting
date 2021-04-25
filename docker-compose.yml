@@ -1,0 +1,28 @@
+version: '3'
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: accounting
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      PGDATA: /var/lib/postgresql/data/dbs
+    volumes:
+    - ./data:/var/lib/postgresql/data/
+    secrets:
+    - db_password
+  web:
+    image: accounting
+    restart: always
+    environment:
+      DB_USER: postgres
+      DB_PASSWORD_FILE: /run/secrets/db_password
+      DB_DRIVER: postgres
+      DB_HOST: db
+    depends_on:
+    - db
+    ports:
+    - "80:80"
+    secrets:
+    - db_password

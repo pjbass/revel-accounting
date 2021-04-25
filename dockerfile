@@ -13,4 +13,4 @@ COPY ./ /accounting
 
 RUN revel build -a /accounting
 
-CMD revel run /accounting prod
+CMD /accounting/entrypoint.sh
