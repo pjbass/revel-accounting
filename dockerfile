@@ -12,5 +12,4 @@ COPY ./ /accounting
 
 EXPOSE 80
 
-ENTRYPOINT revel run /accounting
-CMD prod
+CMD revel run /accounting prod
