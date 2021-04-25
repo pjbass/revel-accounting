@@ -1,3 +1,5 @@
 build:
   docker:
     web: dockerfile
+run:
+  web: revel run /accounting prod
