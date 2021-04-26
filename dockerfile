@@ -1,3 +1,4 @@
+# Dockerfile for building the application and creating the runtime container.
 FROM golang:1.16 as builder
 
 RUN go get github.com/revel/cmd/revel && \

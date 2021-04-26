@@ -1,0 +1,16 @@
+# Dockerfile for building the app container from a prepackaged app
+FROM debian
+
+ENV DB_DRIVER=sqlite3
+ENV DB_HOST=/tmp/testdb.db
+ENV DB_NAME=accounting
+ENV DB_USERNAME=
+ENV DB_PASSWORD=
+ENV PORT=80
+
+COPY ./accounting.tar.gz /accounting/accounting.tar.gz
+COPY ./entrypoint.sh /accounting/entrypoint.sh
+
+RUN tar -xzf /accounting/accounting.tar.gz -C /accounting
+
+CMD /accounting/entrypoint.sh
